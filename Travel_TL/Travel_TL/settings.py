@@ -34,6 +34,11 @@ ALLOWED_HOSTS = []
 
 CKEDITOR_UPLOAD_PATH = "ckeditor/images/"
 
+# CKEDITOR_CONFIGS = {
+#     "default": {
+#         "versionCheck": False
+#     }
+# }
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -45,8 +50,17 @@ INSTALLED_APPS = [
     'travel.apps.TravelConfig',
     'ckeditor',
     'ckeditor_uploader',
+    'rest_framework',
+    'drf_yasg',
+    'oauth2_provider'
 ]
 
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':('oauth2_provider.contrib.rest_framework.OAuth2Authentication',)
+}
+CLIENT_ID='q0vLZztLuAODyL4UaQaTwrPia2zw0hc0gGTzOHvj'
+CLIENT_SECRET='3IJWwrxRwzds4r7lakv2FZDnH7CsjTL5O33vIQjsRdhpb24LDMSGsHDyZC56nCjnjtNDODB5qAYZ7yPH1H6FxXQwiQEr19Wn9faKVBAvsHPiAiWZkWCvAVs7HtbIn4Xq'
+LOGIN_URL = '/admin/login/'
 
 AUTH_USER_MODEL = 'travel.User'
 MEDIA_ROOT = '%s/Travel/static/' % BASE_DIR
@@ -91,10 +105,12 @@ cloudinary.config(
     api_secret="S0j_ME0UDjjzA1j0sCZfil5vOQ4"
 )
 
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'traveldb',
+        'NAME': 'traveldb1',
         'USER': 'root',
         'PASSWORD': 'Admin@123',
         'HOST': '',  # mặc định localhost

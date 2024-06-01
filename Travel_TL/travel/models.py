@@ -22,36 +22,47 @@ class DateGeneral(models.Model):
         abstract = True
 
 
-class VaiTro(enum.Enum):
-    Staff = 1
-    Customer = 2
+class VaiTro(models.TextChoices):
+    Staff = "Staff"
+    Customer = "Customer"
+    Admin="Admin"
 
-
+class StateOfOrder(models.TextChoices):
+    WaitforPaid="Wait for Paid"
+    Paid = "Paid"
+    Complete = "Complete"
+    Reject ="Reject"
 
 
 
 class User(AbstractUser):
+
     password = models.CharField(max_length=300, null=False)
     sdt = models.CharField(max_length=10, null=False)
     address = models.TextField(max_length=300, null=True)
-    vaitro = models.CharField(max_length=100, default=VaiTro.Customer)
-
+    # vaitro = models.CharField(max_length=100, default=VaiTro.Customer)
+    vaitro= models.CharField(choices=VaiTro.choices, max_length=30)
     def __str__(self):
-        self.username
+        return str(self.username)
 
 
 class Staff(User):
     DateAdd = models.DateField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Staff"
+
 
 class Customer(User):
     Avatar = models.ImageField(upload_to='Travel/%Y/%m/', max_length=1000, null=False)
 
+    class Meta:
+        verbose_name = "Customer"
 class Transport(models.Model):
     Name= models.TextField()
     License= models.CharField(max_length=15)
     def __str__(self):
-        return self.Name
+        return "%s %s"% (self.Name,self.License)
 
 class Place(models.Model):
     Id_Place = models.CharField(max_length=20, unique=True, null=False)
@@ -63,6 +74,7 @@ class Place(models.Model):
 
 class Album(models.Model):
     Name= models.CharField(max_length=500, null=True)
+    created_date = models.DateTimeField(default=datetime.datetime.now())
     def __str__(self):
         return self.Name
 
@@ -77,33 +89,41 @@ class Image(models.Model):
 
 
 
+class Schedule(DateGeneral):
+    DepartureDay= models.DateTimeField(default=datetime.datetime.now)
+    def __str__(self):
+        return  str(self.DepartureDay)
+
 class Tour(DateGeneral):
+
     Id_Tour = models.CharField(max_length=40, null=False)
     Tour_Name = models.CharField(max_length=100)
     Description= RichTextField()
     DeparturePlace = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='Place.Tour_set+')
-    DepartureTime = models.DateTimeField(null=False)
+    DepartureTime = models.ForeignKey(Schedule, on_delete=models.CASCADE)
     Destination = models.ForeignKey(Place, on_delete=models.CASCADE)
     Days = models.IntegerField()
     Nights = models.IntegerField()
     Active = models.BooleanField(default=True)
     vehicle= models.ForeignKey(Transport, on_delete=models.CASCADE, null=True, default="____")
+    Adult_price= models.FloatField(null=True, default=0)
+    Children_price = models.FloatField(null=True, default=0)
+    album= models.ForeignKey(Album, on_delete=models.CASCADE)
     def __str__(self):
-        return self.Id_Tour
+        return self.Tour_Name
 
-class Tour_Image(DateGeneral):
-    picture = models.ForeignKey(Image, on_delete=models.CASCADE, null=True)
-    tour= models.ForeignKey(Tour, on_delete=models.PROTECT, null=True)
-
-
-class Price(models.Model):
-    Adult = models.FloatField()
-    Children = models.FloatField()
 
 
 class News(DateGeneral):
     Name_News = models.CharField(max_length=600, null=False)
+    image_thumbnail= CloudinaryField()
+    active=models.BooleanField(default=True)
     Content= RichTextField()
+
+
+    def __str__(self):
+        return self.Name_News
+
 
 
 
@@ -117,19 +137,24 @@ class CMT(DateGeneral):
 
 class CMT_News(CMT):
     news = models.ForeignKey(News, on_delete=models.CASCADE)
-    class Meta:
-        unique_together = ('news', 'user')
+
+    def __str__(self):
+        return "%s %s %s" % (self.content, self.user, self.news)
 
 class CMT_Tour(CMT):
     tour = models.ForeignKey(Tour, on_delete=models.PROTECT)
-    class Meta:
-        unique_together = ('tour', 'user')
+
+    def __str__(self):
+        return "%s %s %s" % (self.content, self.user, self.tour)
 
 
 class Rating_Tour(DateGeneral):
     tour = models.ForeignKey(Tour, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     NumberOfStart = models.IntegerField()
+
+    class Meta:
+        unique_together = ('tour', 'user')
 
 
 class Like(models.Model):
@@ -141,6 +166,7 @@ class Like(models.Model):
 
 class Like_Tour(Like):
     tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
+    Active = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('tour', 'user')
@@ -148,6 +174,28 @@ class Like_Tour(Like):
 
 class Like_News(Like):
     news = models.ForeignKey(News, on_delete=models.PROTECT)
+    Active= models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('news', 'user')
+
+
+
+
+
+class BookTour(models.Model):
+    book_date=models.DateTimeField(auto_now=True)
+    FirstName_BookTour= models.CharField(max_length=20,default="")
+    LastName_BookTour = models.CharField(max_length=20, default="")
+    Phone_BookTour = models.CharField(max_length=10, default="")
+    Email_BookTour = models.CharField(max_length=50, default="")
+    id_tour_id= models.ForeignKey(Tour,on_delete=models.PROTECT)
+    Quantity_Adult= models.IntegerField(default=1)
+    Quantity_Children= models.IntegerField(default=0)
+    State= models.CharField(choices=StateOfOrder.choices,max_length=50)
+
+# class Paid(DateGeneral):
+#     id_booktour= models.ForeignKey(BookTour, on_delete=models.CASCADE)
+
+
+

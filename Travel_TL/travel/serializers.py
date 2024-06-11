@@ -18,6 +18,20 @@ class DepartureTimeSerializer(serializers.ModelSerializer):
         model = Schedule
         fields = ['DepartureDay']
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Image
+        fields=['Path']
+
+class AlbumSerializer(serializers.ModelSerializer):
+    image= serializers.SerializerMethodField()
+    def get_image(self, pk):
+        image1=pk.image_id.all()
+        return [{'Name':a.Name, 'Path': str(a.Path)} for a in image1]
+    class Meta:
+        model= Album
+        fields=['id','image']
+
 
 
 class TourSerializer(serializers.ModelSerializer):
@@ -30,6 +44,9 @@ class TourSerializer(serializers.ModelSerializer):
         fields = ['Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime']
 
 
+
+
+
 class TourSerializerDetail(serializers.ModelSerializer):
     vehicle = TransportSerializer()
     DeparturePlace = DeparturePlaceSerializer()
@@ -37,6 +54,8 @@ class TourSerializerDetail(serializers.ModelSerializer):
     DepartureTime = DepartureTimeSerializer()
     cmt_tour=serializers.SerializerMethodField()
     rating_tour=serializers.SerializerMethodField()
+    album= AlbumSerializer()
+
     def get_cmt_tour(self,pk):
         tour_cmt=pk.cmt_tour_set.all()
         return [{'user':a.user.first_name + " "+a.user.last_name,'content':a.content} for a in tour_cmt]
@@ -46,14 +65,11 @@ class TourSerializerDetail(serializers.ModelSerializer):
         return [{'user':rt.user.first_name+" "+rt.user.last_name,'NumberOfStart':rt.NumberOfStart} for rt in tour_rating]
     class Meta:
         model = Tour
-        fields = ['cmt_tour','rating_tour','Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime','Description','Days','Nights','Adult_price','Children_price']
+        fields = ['album','cmt_tour','rating_tour','Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime','Description','Days','Nights','Adult_price','Children_price']
 
 
 
-class AlbumSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Album
-        fields = ['Name']
+
 
 
 class UserSerializer(serializers.ModelSerializer):

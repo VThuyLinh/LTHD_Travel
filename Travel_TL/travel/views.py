@@ -35,15 +35,20 @@ class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
 
 
 
-class AlbumViewSet(viewsets.ViewSet, generics.ListAPIView):
-    queryset = Album.objects.all()
+# class AlbumViewSet(viewsets.ViewSet, generics.ListAPIView):
+#     queryset = Album.objects.all()
+#     serializer_class = serializers.AlbumSerializer
+#     def get_queryset(self):
+#         queryset= self.queryset
+#         q= self.request.query_params.get('q')
+#         if q:
+#             queryset=queryset.filter(Tour_Name__icontains=q)
+#         return queryset
+
+
+class AlbumViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
+    queryset = Album.objects
     serializer_class = serializers.AlbumSerializer
-    def get_queryset(self):
-        queryset= self.queryset
-        q= self.request.query_params.get('q')
-        if q:
-            queryset=queryset.filter(Tour_Name__icontains=q)
-        return queryset
 
 class TourViewSetDetail(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Tour.objects.filter(Active=True)
@@ -86,6 +91,8 @@ class NewsViewSet(viewsets.ViewSet,generics.ListAPIView):
         if q:
             queryset=queryset.filter( Name_News=q)
         return  queryset
+
+
 
 
 

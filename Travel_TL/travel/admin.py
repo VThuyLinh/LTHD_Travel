@@ -20,7 +20,7 @@ class MyAdminSite(admin.AdminSite):
         return [path('stats_amountimageintour/', self.stats_view)] + super().get_urls()
 
     def stats_view(self, request):
-        stats =Album.objects.annotate(counter=Count('image__id')).values('id','Name','counter')
+        stats =Album.objects.annotate(counter=Count('image_id')).values('id','Name','counter')
         return TemplateResponse(request, 'admin/stats.html', {
             'stats': stats
         })
@@ -40,12 +40,12 @@ class TourForm(forms.ModelForm):
 
 
 
-class TourAdmin(admin.ModelAdmin):
-    list_display = ['Id_Tour','album','album1']
-    search_fields = ['Tour_Name']
-    list_filter = ['Ngày cập nhật']
-    # readonly_fields = ['my_image']
-    form = TourForm
+# class TourAdmin(admin.ModelAdmin):
+#     list_display = ['Id_Tour','album','album1']
+#     search_fields = ['Tour_Name']
+#     list_filter = ['Ngày cập nhật']
+#     # readonly_fields = ['my_image']
+#     form = TourForm
     #
     # # def my_image(self,tour ):
     # #     if tour.album:
@@ -83,10 +83,10 @@ class ImageAdmin(admin.ModelAdmin):
 
     list_display = ['Name','my_image']
     readonly_fields = ['my_image']
-    def my_image(self, image):
-        if (image):
-            print(image.Path)
-            return mark_safe(f"<img src='https://res.cloudinary.com/dqcjhhtlm/image/upload/{image.Path}' width='200' />")
+    def my_image(self, imageForTour):
+        if (imageForTour):
+            print(imageForTour.Path)
+            return mark_safe(f"<img src='/static/{imageForTour.Path}' width='200' />")
 
 
 
@@ -95,12 +95,11 @@ class ImageAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin_site.register(News, NewsAdmin)
-admin_site.register(Tour, TourAdmin)
+admin_site.register(Tour)
 admin_site.register(BookTour)
 admin_site.register(CMT_News)
 admin_site.register(Image, ImageAdmin)
 admin_site.register(Album)
-
 admin_site.register(User, UserAdmin)
 
 # admin.site.register(C)

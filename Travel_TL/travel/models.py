@@ -1,6 +1,6 @@
 from django.db import models
 from ckeditor.fields import RichTextField
-from cloudinary.models import CloudinaryField
+
 
 # Create your models here.
 import datetime
@@ -72,20 +72,23 @@ class Place(models.Model):
         return self.Place_Name
 
 
-class Album(models.Model):
-    Name= models.CharField(max_length=500, null=True)
-    created_date = models.DateTimeField(default=datetime.datetime.now())
-    def __str__(self):
-        return self.Name
-
 class Image(models.Model):
     Name= models.CharField(max_length=500, null= True)
-    Path = CloudinaryField()
-    Pic = models.ForeignKey(Album, on_delete=models.CASCADE)
+    Path = models.ImageField(upload_to='imageForTour/%Y/%m')
+
     created_date= models.DateTimeField(default=datetime.datetime.now())
 
     def __str__(self):
         return self.Name
+
+class Album(models.Model):
+    Name= models.CharField(max_length=500, null=True)
+    created_date = models.DateTimeField(default=datetime.datetime.now())
+    image_id= models.ManyToManyField(Image)
+    def __str__(self):
+        return self.Name
+
+
 
 
 
@@ -95,7 +98,6 @@ class Schedule(DateGeneral):
         return  str(self.DepartureDay)
 
 class Tour(DateGeneral):
-
     Id_Tour = models.CharField(max_length=40, null=False)
     Tour_Name = models.CharField(max_length=100)
     Description= RichTextField()
@@ -116,7 +118,7 @@ class Tour(DateGeneral):
 
 class News(DateGeneral):
     Name_News = models.CharField(max_length=600, null=False)
-    image_thumbnail= CloudinaryField()
+    image_thumbnail= models.ImageField(upload_to='news/%Y/%m')
     active=models.BooleanField(default=True)
     Content= RichTextField()
 

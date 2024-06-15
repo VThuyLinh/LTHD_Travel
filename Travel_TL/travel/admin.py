@@ -13,6 +13,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display=['username','last_name','vaitro']
 
 
+
 class MyAdminSite(admin.AdminSite):
     site_header = 'TL_Travel;'
 
@@ -32,30 +33,21 @@ admin_site = MyAdminSite(name='TL_Travel')
 
 
 class TourForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorUploadingWidget)
-    popup_response_template = True
+    Description = forms.CharField(widget=CKEditorUploadingWidget)
     class Meta:
         model = Tour
         fields = '__all__'
 
 
 
-# class TourAdmin(admin.ModelAdmin):
-#     list_display = ['Id_Tour','album','album1']
-#     search_fields = ['Tour_Name']
-#     list_filter = ['Ngày cập nhật']
-#     # readonly_fields = ['my_image']
-#     form = TourForm
-    #
-    # # def my_image(self,tour ):
-    # #     if tour.album:
-    # #         return mark_safe(f"<img width='200' src='{tour.image.url}' />")
-    # def album1(self, request):
-    #     # for a in request.image_set.all():
-    #     #     {
-    #     #
-    #     #     }
-    #     print(request.image_set.all())
+class TourAdmin(admin.ModelAdmin):
+    list_display = ['Tour_Name']
+    search_fields = ['Tour_Name']
+    form= TourForm
+
+    def my_image(self, tour):
+        if tour.image:
+            return mark_safe(f"<img src='/static/ckeditor/{tour.image.Path}' width='200' />")
 
 
 
@@ -77,7 +69,7 @@ class NewsAdmin(admin.ModelAdmin):
 
     def my_image(self, news):
         if news.image:
-            return mark_safe(f"<img src='https://res.cloudinary.com/dqcjhhtlm/image/upload/{news.image.name}' width='200' />")
+            return mark_safe(f"<img src='/static/ckeditor/{images.Path}' width='200' />")
 
 class ImageAdmin(admin.ModelAdmin):
 
@@ -95,11 +87,13 @@ class ImageAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin_site.register(News, NewsAdmin)
-admin_site.register(Tour)
+admin_site.register(Tour,TourAdmin)
 admin_site.register(BookTour)
 admin_site.register(CMT_News)
+admin_site.register(CMT_Tour)
 admin_site.register(Image, ImageAdmin)
 admin_site.register(Album)
 admin_site.register(User, UserAdmin)
+
 
 # admin.site.register(C)

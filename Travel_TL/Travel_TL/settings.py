@@ -28,7 +28,12 @@ SECRET_KEY = 'django-insecure-xb!#wzf0@#k74rw9g6-i8fq_*o8sph^1#$xermdf6#ulqd+0_@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tlinh.pythonanywhere.com']
+
+import os
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
 
 # Application definition
 
@@ -58,8 +63,8 @@ INSTALLED_APPS = [
 REST_FRAMEWORK={
     'DEFAULT_AUTHENTICATION_CLASSES':('oauth2_provider.contrib.rest_framework.OAuth2Authentication',)
 }
-CLIENT_ID='q0vLZztLuAODyL4UaQaTwrPia2zw0hc0gGTzOHvj'
-CLIENT_SECRET='3IJWwrxRwzds4r7lakv2FZDnH7CsjTL5O33vIQjsRdhpb24LDMSGsHDyZC56nCjnjtNDODB5qAYZ7yPH1H6FxXQwiQEr19Wn9faKVBAvsHPiAiWZkWCvAVs7HtbIn4Xq'
+CLIENT_ID='T4rDLQFIoFriIFOtx3tpC3sAYduBcxl52Is7g0eQ'
+CLIENT_SECRET='GbIimEcqDOgOBY8ylZZVZslMuoXIjFdDLG3kicP9m4STyMlLAyMeMngIekyuawhiy4yrAP3B8UHM1J62EeEcdPy5jt0Qag60cmuvmXpnAR5cRTaVimwpv302tfGJTQEv'
 LOGIN_URL = '/admin/login/'
 
 AUTH_USER_MODEL = 'travel.User'
@@ -110,10 +115,10 @@ cloudinary.config(
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'traveldb1',
-        'USER': 'root',
+        'NAME': 'tLinh$traveldb1',
+        'USER': 'tLinh',
         'PASSWORD': 'Admin@123',
-        'HOST': '',  # mặc định localhost
+        'HOST': 'tLinh.mysql.pythonanywhere-services.com',  # mặc định localhost
         'OPTIONS': {
             "init_command": "SET foreign_key_checks = 0;",
         },
@@ -152,7 +157,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

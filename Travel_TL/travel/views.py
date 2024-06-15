@@ -1,7 +1,7 @@
 import datetime
 
 from django.shortcuts import render
-from rest_framework import viewsets, generics, status, parsers
+from rest_framework import viewsets, generics, status, parsers, permissions
 from travel.models import *
 from travel import serializers,perm
 import datetime
@@ -81,6 +81,24 @@ class UserViewSet(viewsets.ViewSet, generics.CreateAPIView):
     queryset = User.objects.filter(is_active=True)
     serializer_class = serializers.UserSerializer
     parser_classes = [parsers.MultiPartParser, ]
+
+    def get_permissions(self):
+        if self.action in ['get_current_user']:
+            return [permissions.IsAuthenticated()]
+
+        return [permissions.AllowAny()]
+
+    @action(methods=['get', 'patch'], url_path='current-user', detail=False)
+    def get_current_user(self, request):
+        user = request.user
+        if request.method.__eq__('PATCH'):
+            for k, v in request.data.items():
+                setattr(user, k, v)
+            user.save()
+
+        return Response(serializers.UserSerializer(user).data)
+
+
 
 class NewsViewSet(viewsets.ViewSet,generics.ListAPIView):
     queryset = News.objects.filter(active=True)

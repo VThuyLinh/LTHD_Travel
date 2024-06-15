@@ -36,12 +36,12 @@ class AlbumSerializer(serializers.ModelSerializer):
 
 class TourSerializer(serializers.ModelSerializer):
     vehicle = TransportSerializer()
-    DeparturePlace=DeparturePlaceSerializer()
-    Destination= DeparturePlaceSerializer()
+    # DeparturePlace=DeparturePlaceSerializer()
+    # Destination= DeparturePlaceSerializer()
     DepartureTime=DepartureTimeSerializer()
     class Meta:
         model = Tour
-        fields = ['Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime']
+        fields = ['id','Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime','DatePost']
 
 
 
@@ -86,7 +86,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'address','vaitro']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'address']
         extra_kwargs = {
             'password': {
                 'write_only': True

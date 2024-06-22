@@ -1,4 +1,5 @@
 from django.contrib.auth.password_validation import validate_password
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers
 from travel.models import *
 
@@ -41,7 +42,7 @@ class TourSerializer(serializers.ModelSerializer):
     DepartureTime=DepartureTimeSerializer()
     class Meta:
         model = Tour
-        fields = ['Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime']
+        fields = ['Id_Tour', 'Tour_Name', 'DeparturePlace','Destination' ,'vehicle','DepartureTime','Ngày đăng']
 
 
 
@@ -71,9 +72,7 @@ class TourSerializerDetail(serializers.ModelSerializer):
 
 
 
-
 class UserSerializer(serializers.ModelSerializer):
-
     def create(self, validated_data):
         data = validated_data.copy()
         user = User(**data)
@@ -82,11 +81,9 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-
-
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'address','vaitro']
+        fields = ['id', 'first_name', 'last_name', 'email', 'username', 'password', 'address','vaitro','Avatar']
         extra_kwargs = {
             'password': {
                 'write_only': True
@@ -96,7 +93,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CustomerSerializer(UserSerializer):
     class Meta:
         model = Customer
-        fields = UserSerializer.Meta.fields + ['Avatar']
+        fields =['Avatar']
 
 
 class StaffSerializer(UserSerializer):
@@ -119,14 +116,8 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return instance
 
 
+
 class BookTourSerializer(serializers.ModelSerializer):
-
-    def create(self, validated_data):
-        data = validated_data.copy()
-        booktour = BookTour(**data)
-        booktour.save()
-
-        return booktour
 
     class Meta:
         model = BookTour
@@ -146,6 +137,20 @@ class NewsSerializer(serializers.ModelSerializer):
     class Meta:
         model=News
         fields=['Name_News','Content']
+
+class Like_TourSerializer(serializers.ModelSerializer):
+    tour= TourSerializer()
+    class Meta:
+        model= Like_Tour
+        fields=['tour','Active']
+
+class Like_NewsSerializer(serializers.ModelSerializer):
+    news= NewsSerializer()
+    class Meta:
+        model= Like_News
+        fields=['news','Active']
+
+
 
 class CMTSerializer(serializers.ModelSerializer):
     class Meta:

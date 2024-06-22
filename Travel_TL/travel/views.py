@@ -15,6 +15,7 @@ from travel import  paginators
 class TourViewSet(viewsets.ViewSet,generics.ListAPIView):
     queryset = Tour.objects.filter(Active=True)
     serializer_class = serializers.TourSerializer
+    pagination_class = paginators.TourPaginator
     def get_queryset(self):
         queryset= self.queryset
         q= self.request.query_params.get('Price')
@@ -64,6 +65,11 @@ class TourViewSetDetail(viewsets.ViewSet, generics.RetrieveAPIView):
     def create_rating_tour(self, request, pk):
         rating_tour = self.get_object().rating_tour_set.create(NumberOfStart=request.data.get('NumberOfStart'), user=request.user)
         return Response(serializers.CMT_TourSerializer(rating_tour).data)
+
+    @action(methods=['get'], url_path='get_like_tour', detail=True)
+    def like_tour(self, request, pk):
+        like_tour = Like_Tour.objects
+        return Response(serializers.Like_TourSerializer(like_tour, many=True).data)
 
     @action(methods=['post'], url_path='like_tour', detail=True)
     def like(self, request, pk):
@@ -162,6 +168,9 @@ class CustomerViewSet(viewsets.ViewSet,generics.CreateAPIView):
     queryset = Customer.objects
     serializer_class = serializers.CustomerSerializer
 
+class BookTourDetailViewSet(viewsets.ViewSet,generics.ListAPIView):
+    queryset = BookTour.objects
+    serializer_class = serializers.BookTourSerializer
 
 
 class CMT_TourViewSet(viewsets.ViewSet, generics.DestroyAPIView, generics.UpdateAPIView):

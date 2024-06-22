@@ -7,10 +7,15 @@ from django import forms
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.urls import path
 from django.template.response import TemplateResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializers import *
+
 
 
 class UserAdmin(admin.ModelAdmin):
     list_display=['username','last_name','vaitro']
+
 
 
 class MyAdminSite(admin.AdminSite):
@@ -19,11 +24,34 @@ class MyAdminSite(admin.AdminSite):
     def get_urls(self):
         return [path('stats_amountimageintour/', self.stats_view)] + super().get_urls()
 
+    # def stats_view(self, request):
+    #     stats =Album.objects.annotate(counter=Count('image_id')).values('id','Name','counter')
+    #     return TemplateResponse(request, 'admin/stats.html', {
+    #         'stats': stats
+    #     })
     def stats_view(self, request):
-        stats =Album.objects.annotate(counter=Count('image_id')).values('id','Name','counter')
+        stats =Tour.objects.annotate(counter=Count('id_customer_bt_id')).values('id_customer_bt_id','counter')
         return TemplateResponse(request, 'admin/stats.html', {
             'stats': stats
         })
+    def stats_view1(self, request):
+        statss =BookTour.objects.annotate(counter=Count('id_customer_bt_id')).values('FirstName_BookTour','LastName_BookTour','counter')
+        return TemplateResponse(request, 'admin/stats.html', {
+            'stats': statss
+        })
+    def stats_view2(self, request):
+        statss =Tour.objects.annotate(counter=Count('id')).values('id','Tour_Name','counter')
+        return TemplateResponse(request, 'admin/stats.html', {
+            'stats': statss
+        })
+
+
+
+
+
+
+
+
 
 
 admin_site = MyAdminSite(name='TL_Travel')
@@ -32,30 +60,20 @@ admin_site = MyAdminSite(name='TL_Travel')
 
 
 class TourForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorUploadingWidget)
-    popup_response_template = True
+    Description = forms.CharField(widget=CKEditorUploadingWidget)
     class Meta:
         model = Tour
         fields = '__all__'
 
 
+class TourAdmin(admin.ModelAdmin):
+    list_display = ['Tour_Name']
+    search_fields = ['Tour_Name']
+    form= TourForm
 
-# class TourAdmin(admin.ModelAdmin):
-#     list_display = ['Id_Tour','album','album1']
-#     search_fields = ['Tour_Name']
-#     list_filter = ['Ngày cập nhật']
-#     # readonly_fields = ['my_image']
-#     form = TourForm
-    #
-    # # def my_image(self,tour ):
-    # #     if tour.album:
-    # #         return mark_safe(f"<img width='200' src='{tour.image.url}' />")
-    # def album1(self, request):
-    #     # for a in request.image_set.all():
-    #     #     {
-    #     #
-    #     #     }
-    #     print(request.image_set.all())
+    def my_image(self, tour):
+        if tour.image:
+            return mark_safe(f"<img src='/static/{tour.image.Path}' width='200' />")
 
 
 
@@ -77,7 +95,7 @@ class NewsAdmin(admin.ModelAdmin):
 
     def my_image(self, news):
         if news.image:
-            return mark_safe(f"<img src='https://res.cloudinary.com/dqcjhhtlm/image/upload/{news.image.name}' width='200' />")
+            return mark_safe(f"<img src='/static/{news.image.name}' width='200' />")
 
 class ImageAdmin(admin.ModelAdmin):
 
@@ -93,13 +111,18 @@ class ImageAdmin(admin.ModelAdmin):
 
 
 
+
+
 # Register your models here.
 admin_site.register(News, NewsAdmin)
-admin_site.register(Tour)
+admin_site.register(Tour,TourAdmin)
 admin_site.register(BookTour)
+admin_site.register(Staff)
 admin_site.register(CMT_News)
 admin_site.register(Image, ImageAdmin)
 admin_site.register(Album)
 admin_site.register(User, UserAdmin)
+
+
 
 # admin.site.register(C)

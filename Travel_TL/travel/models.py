@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from ckeditor.fields import RichTextField
 
@@ -41,9 +42,16 @@ class User(AbstractUser):
     sdt = models.CharField(max_length=10, null=False)
     address = models.TextField(max_length=300, null=True)
     # vaitro = models.CharField(max_length=100, default=VaiTro.Customer)
-    vaitro= models.CharField(choices=VaiTro.choices, max_length=30)
+    vaitro= models.CharField(choices=VaiTro.choices, max_length=30, default="Customer")
+    Avatar = models.ImageField(upload_to='Travel/%Y/%m/', max_length=1000, null=False)
     def __str__(self):
         return str(self.username)
+
+    def save(self, *args, **kwargs):
+        if self.password and not self.password.startswith('pbkdf2_sha256$'):
+            self.password = make_password(self.password)
+
+        super().save(*args, **kwargs)
 
 
 class Staff(User):
@@ -54,7 +62,6 @@ class Staff(User):
 
 
 class Customer(User):
-    Avatar = models.ImageField(upload_to='Travel/%Y/%m/', max_length=1000, null=False)
 
     class Meta:
         verbose_name = "Customer"
@@ -93,7 +100,7 @@ class Album(models.Model):
 
 
 class Schedule(DateGeneral):
-    DepartureDay= models.DateTimeField(default=datetime.datetime.now)
+    DepartureDay= models.DateField(auto_now_add=True)
     def __str__(self):
         return  str(self.DepartureDay)
 
@@ -186,11 +193,18 @@ class Like_News(Like):
 
 
 class BookTour(models.Model):
+    id_customer_bt=models.ForeignKey(Customer, on_delete=models.CASCADE)
     book_date=models.DateTimeField(auto_now=True)
     FirstName_BookTour= models.CharField(max_length=20,default="")
     LastName_BookTour = models.CharField(max_length=20, default="")
     Phone_BookTour = models.CharField(max_length=10, default="")
     Email_BookTour = models.CharField(max_length=50, default="")
+    DeparturePlace = models.ForeignKey(Place, on_delete=models.CASCADE, related_name='Place.Tour_set+')
+    DepartureTime = models.ForeignKey(Schedule, on_delete=models.CASCADE)
+    Destination = models.ForeignKey(Place, on_delete=models.CASCADE)
+    Days = models.IntegerField()
+    Nights = models.IntegerField()
+    vehicle = models.ForeignKey(Transport, on_delete=models.CASCADE, null=True, default="____")
     id_tour_id= models.ForeignKey(Tour,on_delete=models.PROTECT)
     Quantity_Adult= models.IntegerField(default=1)
     Quantity_Children= models.IntegerField(default=0)

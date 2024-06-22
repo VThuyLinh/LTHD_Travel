@@ -71,9 +71,20 @@ class TourAdmin(admin.ModelAdmin):
     search_fields = ['Tour_Name']
     form= TourForm
 
+
     def my_image(self, tour):
         if tour.image:
             return mark_safe(f"<img src='/static/{tour.image.Path}' width='200' />")
+
+class TourAdmin(admin.ModelAdmin):
+    list_display = ['Tour_Name']
+    search_fields = ['Tour_Name']
+    form= TourForm
+
+    def my_image(self, tour):
+        if tour.image:
+            return mark_safe(f"<img src='/static/ckeditor/{tour.image.Path}' width='200' />")
+
 
 
 
@@ -95,6 +106,7 @@ class NewsAdmin(admin.ModelAdmin):
 
     def my_image(self, news):
         if news.image:
+
             return mark_safe(f"<img src='/static/{news.image.name}' width='200' />")
 
 class ImageAdmin(admin.ModelAdmin):
@@ -119,6 +131,7 @@ admin_site.register(Tour,TourAdmin)
 admin_site.register(BookTour)
 admin_site.register(Staff)
 admin_site.register(CMT_News)
+admin_site.register(CMT_Tour)
 admin_site.register(Image, ImageAdmin)
 admin_site.register(Album)
 admin_site.register(User, UserAdmin)

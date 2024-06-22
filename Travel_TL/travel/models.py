@@ -1,6 +1,7 @@
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from ckeditor.fields import RichTextField
+from django.contrib.auth.hashers import make_password
 
 
 # Create your models here.
@@ -16,8 +17,8 @@ import enum
 
 
 class DateGeneral(models.Model):
-    DatePost = models.DateTimeField(auto_now_add=True, name='Ngày đăng')
-    DateUpdate = models.DateTimeField(auto_now=True, name='Ngày cập nhật')
+    DatePost = models.DateTimeField(auto_now_add=True)
+    DateUpdate = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
@@ -44,6 +45,7 @@ class User(AbstractUser):
     # vaitro = models.CharField(max_length=100, default=VaiTro.Customer)
     vaitro= models.CharField(choices=VaiTro.choices, max_length=30, default="Customer")
     Avatar = models.ImageField(upload_to='Travel/%Y/%m/', max_length=1000, null=False)
+
     def __str__(self):
         return str(self.username)
 
@@ -81,7 +83,7 @@ class Place(models.Model):
 
 class Image(models.Model):
     Name= models.CharField(max_length=500, null= True)
-    Path = models.ImageField(upload_to='imageForTour/%Y/%m')
+    Path = models.ImageField(upload_to='/static/imageForTour/%Y/%m')
 
     created_date= models.DateTimeField(default=datetime.datetime.now())
 
@@ -100,7 +102,7 @@ class Album(models.Model):
 
 
 class Schedule(DateGeneral):
-    DepartureDay= models.DateField(auto_now_add=True)
+    DepartureDay= models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return  str(self.DepartureDay)
 
